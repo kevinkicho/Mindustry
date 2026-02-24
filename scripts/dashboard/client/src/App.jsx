@@ -14,15 +14,26 @@ function App() {
     const [showAudit, setShowAudit] = useState(false);
     const [orphans, setOrphans] = useState([]);
     const [blockSubFilter, setBlockSubFilter] = useState('');
+    const [locales, setLocales] = useState(['en']);
+    const [selectedLocale, setSelectedLocale] = useState('en');
 
     useEffect(() => {
+        fetchLocales();
         fetchAssets();
-    }, []);
+    }, [selectedLocale]);
+
+    const fetchLocales = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/api/locales`);
+            const data = await res.json();
+            if (Array.isArray(data)) setLocales(data);
+        } catch (e) { console.error('Failed to fetch locales', e); }
+    };
 
     const fetchAssets = () => {
         setLoading(true);
         setProgressMsg('Connecting...');
-        const es = new EventSource(`${API_BASE}/api/assets-stream`);
+        const es = new EventSource(`${API_BASE}/api/assets-stream?locale=${selectedLocale}`);
         es.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'progress') {
@@ -218,6 +229,13 @@ function App() {
                         >
                             Repack
                         </button>
+                        <select
+                            value={selectedLocale}
+                            onChange={(e) => setSelectedLocale(e.target.value)}
+                            style={{ padding: '0.8rem', borderRadius: '4px', border: '1px solid #333', backgroundColor: '#1a1a1a', color: 'white', cursor: 'pointer' }}
+                        >
+                            {locales.map(l => <option key={l} value={l}>{l.toUpperCase()}</option>)}
+                        </select>
                     </div>
                 </header>
 
@@ -247,7 +265,10 @@ function App() {
                                 <tbody>
                                     {filteredAssets.map(a => (
                                         <tr key={a.variableName + a.sourceFile} style={{ borderBottom: '1px solid #222' }}>
-                                            <td style={{ padding: '0.8rem', fontWeight: 'bold' }}>{a.variableName}</td>
+                                            <td style={{ padding: '0.8rem' }}>
+                                                <div style={{ fontWeight: 'bold' }}>{a.name || a.variableName}</div>
+                                                <div style={{ fontSize: '0.7rem', color: '#555' }}>{a.variableName}</div>
+                                            </td>
                                             <td style={{ padding: '0.8rem', color: '#888' }}><code>{a.id || '(null)'}</code></td>
                                             <td style={{ padding: '0.8rem' }}>
                                                 <span style={{
@@ -314,11 +335,18 @@ function App() {
 
                                 <div style={{ flexGrow: 1 }}>
                                     <div style={{ marginBottom: '1rem' }}>
-                                        <h3 style={{ margin: 0, color: asset.isVariableOnly ? '#f44336' : '#ff9800' }}>{asset.variableName}</h3>
+                                        <h3 style={{ margin: 0, color: asset.isVariableOnly ? '#f44336' : '#ff9800' }} title={asset.variableName}>
+                                            {asset.name || asset.variableName}
+                                        </h3>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.3rem' }}>
                                             <code style={{ fontSize: '0.75rem', color: '#555' }}>ID: {asset.id || '(null)'}</code>
-                                            {asset.isVariableOnly && <span style={{ fontSize: '0.6rem', background: '#420000', color: '#ffaaaa', padding: '1px 4px', borderRadius: '3px' }}>Uninitialized in Code</span>}
+                                            <span style={{ fontSize: '0.7rem', color: '#888', fontStyle: 'italic' }}>{asset.variableName}</span>
                                         </div>
+                                        {asset.description && (
+                                            <p style={{ fontSize: '0.75rem', color: '#aaa', marginTop: '0.8rem', fontStyle: 'italic', lineHeight: '1.4', background: '#151515', padding: '0.5rem', borderRadius: '4px' }}>
+                                                {asset.description}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div style={{ fontSize: '0.75rem', color: '#888', background: '#151515', padding: '0.8rem', borderRadius: '6px', marginBottom: '1rem', border: '1px solid #222' }}>

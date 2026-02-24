@@ -44,6 +44,23 @@ function hyphenToCamel(str) {
     return str.replace(/-([a-z])/g, g => g[1].toUpperCase());
 }
 
+async function scanBundles() {
+    const bundlePath = path.join(PROJECT_ROOT, 'core/assets/bundles/bundle.properties');
+    if (!await fs.pathExists(bundlePath)) return {};
+
+    const content = await fs.readFile(bundlePath, 'utf8');
+    const mapping = {};
+    const lines = content.split('\n');
+    for (const line of lines) {
+        const eqIndex = line.indexOf('=');
+        if (eqIndex === -1) continue;
+        const key = line.substring(0, eqIndex).trim();
+        const val = line.substring(eqIndex + 1).trim();
+        mapping[key] = val;
+    }
+    return mapping;
+}
+
 // Pre-build a sprite index: basename -> [{relPath, fullPath}]
 async function buildSpriteIndex() {
     const allFiles = await fg('**/*.png', { cwd: SPRITES_ROOT });
@@ -57,8 +74,26 @@ async function buildSpriteIndex() {
     return index;
 }
 
+async function scanBundles(bundleFile = 'bundle') {
+    const bundlePath = path.join(PROJECT_ROOT, `core/assets/bundles/${bundleFile}.properties`);
+    if (!await fs.pathExists(bundlePath)) return {};
+
+    const content = await fs.readFile(bundlePath, 'utf8');
+    const mapping = {};
+    const lines = content.split('\n');
+    for (const line of lines) {
+        const eqIndex = line.indexOf('=');
+        if (eqIndex === -1) continue;
+        const key = line.substring(0, eqIndex).trim();
+        const val = line.substring(eqIndex + 1).trim();
+        mapping[key] = val;
+    }
+    return mapping;
+}
+
 // Fast sprite lookup using pre-built index
-function findSpriteInfo(id, variableName, spriteIndex, assetType) {
+function findSpriteInfo(asset, spriteIndex) {
+    const { id, variableName, type: assetType } = asset;
     const candidates = new Set();
     const tried = [];
 
@@ -95,6 +130,20 @@ function findSpriteInfo(id, variableName, spriteIndex, assetType) {
         if (variableName) candidates.add(`liquid-${camelToHyphen(variableName)}`);
     } else if (assetType === 'effect') {
         if (id) candidates.add(`status-${id}`);
+    } else if (assetType === 'sector') {
+        if (id) candidates.add(`sector-${id}`);
+        if (variableName) candidates.add(`sector-${variableName}`);
+        if (variableName) candidates.add(`sector-${camelToHyphen(variableName)}`);
+    } else if (assetType === 'weather') {
+        const pr = asset.properties?.particleRegion;
+        const np = asset.properties?.noisePath;
+        if (pr) candidates.add(pr);
+        if (np) candidates.add(np);
+        // Defaults for ParticleWeather
+        candidates.add("particle");
+        candidates.add("circle-shadow");
+        candidates.add("noiseAlpha");
+        candidates.add("circle-small");
     }
 
     // Exact match via index
@@ -159,7 +208,7 @@ function extractProperties(statsRaw) {
     while ((m = assignRegex.exec(statsRaw)) !== null) {
         const key = m[1].trim();
         let val = m[2].trim();
-        val = val.replace(/f$/, '').trim();
+        val = val.replace(/f$/, '').replace(/^"|"$/g, '').trim();
         if (val.includes('=>') || val.includes('->') || val.length > 80) continue;
         props[key] = val;
     }
@@ -304,8 +353,70 @@ async function scanAtlasFinds() {
     return names;
 }
 
+// Scans core/assets/icons/icons.properties for UI icon mapping
+async function scanIcons() {
+    const iconPath = path.join(PROJECT_ROOT, 'core/assets/icons/icons.properties');
+    if (!await fs.pathExists(iconPath)) return new Set();
+
+    const content = await fs.readFile(iconPath, 'utf8');
+    const names = new Set();
+    const lines = content.split('\n');
+    for (const line of lines) {
+        const eqIndex = line.indexOf('=');
+        if (eqIndex === -1) continue;
+        const parts = line.substring(eqIndex + 1).split('|');
+        if (parts.length >= 2) {
+            names.add(parts[1].trim()); // The second part (texture name)
+        }
+    }
+    return names;
+}
+
+// Parse UnitTypes.java for weapon sprite names: new Weapon("sprite-name")
+// Returns Map<weaponSpriteName, unitName> for ownership tracking
+async function parseWeapons() {
+    const filePath = path.join(CONTENT_ROOT, 'UnitTypes.java');
+    if (!await fs.pathExists(filePath)) return new Map();
+
+    const content = await fs.readFile(filePath, 'utf8');
+    const weaponMap = new Map(); // weaponSpriteName -> unitName
+
+    // Find all unit definitions and their weapons
+    const unitRegex = /(?:new\s+UnitType\("([^"]+)"\))|(new\s+Weapon\("([^"]+)"\))/g;
+    let currentUnit = null;
+    let m;
+    while ((m = unitRegex.exec(content)) !== null) {
+        if (m[1]) {
+            currentUnit = m[1];
+        } else if (m[3] && currentUnit) {
+            weaponMap.set(m[3], currentUnit);
+        }
+    }
+    return weaponMap;
+}
+
+// Known generated sprite patterns from Generators.java
+// These are created at build time and don't map to content variables
+const GENERATED_PATTERNS = [
+    /^cliffmask\d+$/,           // cliff masks
+    /^block-.*-full$/,           // block composite icons 
+    /^unit-.*-full$/,            // unit composite icons
+    /^.*-ui$/,                   // UI icons
+    /^.*-outline$/,              // outlined versions
+    /^.*-team-\w+$/,             // team-colored versions
+    /^.*-segment-outline\d*$/,   // crawl unit segment outlines
+    /^.*-treads\d+-\d+$/,        // tank tread animation frames
+    /^splash-\d+$/,              // splash animation frames
+    /^bubble-\d+$/,              // bubble animation frames
+    /^fluid-(liquid|gas)-\d+$/,  // liquid/gas animation frames
+    /^rubble-\d+-\d+$/,           // rubble decals when blocks are destroyed
+];
+
+// Factory shared sprites pattern from PayloadBlock.java
+const FACTORY_PATTERN = /^factory-(in|out|top)-\d+(-dark)?$/;
+
 // Robust Java Parsing
-async function parseContent(onProgress = () => { }) {
+async function parseContent(bundleFile, onProgress = () => { }) {
     const assetsMap = new Map(); // variableName -> asset
     let statsSummary = { total: 0, withSprites: 0 };
 
@@ -390,6 +501,14 @@ async function parseContent(onProgress = () => { }) {
     const atlasNames = await scanAtlasFinds();
     onProgress(`Found ${atlasNames.size} atlas references across all Java files.`);
 
+    onProgress('Scanning icons.properties for UI icons...');
+    const iconNames = await scanIcons();
+    onProgress(`Found ${iconNames.size} UI icon mappings.`);
+    for (const name of iconNames) atlasNames.add(name);
+
+    onProgress('Loading localization bundles...');
+    const bundle = await scanBundles(bundleFile);
+
     const assets = Array.from(assetsMap.values());
     const matchedSpritePaths = new Set();
 
@@ -400,15 +519,24 @@ async function parseContent(onProgress = () => { }) {
     for (let i = 0; i < assets.length; i++) {
         if (i % 100 === 0) onProgress(`Matching sprites... ${i}/${assets.length}`);
         const asset = assets[i];
-        const spriteInfo = findSpriteInfo(asset.id, asset.variableName, spriteIndex, asset.type);
+
+        // Extract properties first so they can be used for sprite matching (e.g. weather particles)
+        asset.properties = extractProperties(asset.statsRaw);
+        delete asset.statsRaw; // don't send raw block to frontend
+
+        const spriteInfo = findSpriteInfo(asset, spriteIndex);
         asset.spritePath = spriteInfo.path;
         asset.category = spriteInfo.category !== 'Unknown' ? spriteInfo.category : asset.category;
         asset.matchedName = spriteInfo.matchedName;
         asset.dimensions = spriteInfo.dimensions;
         asset.fileSize = spriteInfo.fileSize;
         asset.tried = spriteInfo.tried;
-        asset.properties = extractProperties(asset.statsRaw);
-        delete asset.statsRaw; // don't send raw block to frontend
+
+        // Apply localization
+        const hyphenId = camelToHyphen(asset.id || asset.variableName);
+        const prefix = asset.type === 'unit' ? 'unit' : (asset.type === 'item' ? 'item' : (asset.type === 'liquid' ? 'liquid' : 'block'));
+        asset.name = bundle[`${prefix}.${hyphenId}.name`] || bundle[`${prefix}.${asset.id}.name`] || asset.variableName;
+        asset.description = bundle[`${prefix}.${hyphenId}.description`] || bundle[`${prefix}.${asset.id}.description`] || "";
 
         if (asset.spritePath) {
             statsSummary.withSprites++;
@@ -417,7 +545,10 @@ async function parseContent(onProgress = () => { }) {
         statsSummary.total++;
     }
 
-    onProgress('Computing orphans...');
+    onProgress('Parsing weapon sprites from UnitTypes.java...');
+    const weaponMap = await parseWeapons();
+    onProgress(`Found ${weaponMap.size} weapon sprites. Computing orphans...`);
+
     // Reuse sprite index for orphan detection
     const normalizedAll = [];
     for (const [bn, entries] of spriteIndex) {
@@ -441,6 +572,34 @@ async function parseContent(onProgress = () => { }) {
         }
     }
 
+    // Strategy 1: Mark weapon sprites as matched (owned by their parent unit)
+    for (const [weaponName, unitName] of weaponMap) {
+        const spritePaths = baseNameToPaths.get(weaponName);
+        if (spritePaths) {
+            for (const sp of spritePaths) matchedSpritePaths.add(sp);
+        }
+        // Also match weapon variant sprites: weaponName-heat, weaponName-cell, etc.
+        for (const [bn, paths] of baseNameToPaths) {
+            if (bn.startsWith(weaponName + '-') || bn.startsWith(weaponName + '-')) {
+                for (const sp of paths) matchedSpritePaths.add(sp);
+            }
+        }
+    }
+
+    // Strategy 2: Mark factory shared sprites (PayloadBlock fallback pattern)
+    for (const [bn, paths] of baseNameToPaths) {
+        if (FACTORY_PATTERN.test(bn)) {
+            for (const sp of paths) matchedSpritePaths.add(sp);
+        }
+    }
+
+    // Strategy 3: Mark generated sprites from Generators.java patterns
+    for (const [bn, paths] of baseNameToPaths) {
+        if (GENERATED_PATTERNS.some(p => p.test(bn))) {
+            for (const sp of paths) matchedSpritePaths.add(sp);
+        }
+    }
+
     // Prefix-based ownership: sprites like "router-top", "duo1", "conveyor-0-0"
     // belong to their parent asset (router, duo, conveyor)
     const knownNames = new Set();
@@ -457,6 +616,8 @@ async function parseContent(onProgress = () => { }) {
         }
     }
     for (const name of atlasNames) knownNames.add(name);
+    // Also add weapon names to known names for suffix matching
+    for (const [weaponName] of weaponMap) knownNames.add(weaponName);
 
     for (const s of normalizedAll) {
         if (matchedSpritePaths.has(s)) continue;
@@ -483,9 +644,28 @@ async function parseContent(onProgress = () => { }) {
     return { assets, summary: statsSummary, orphans, atlasRefs: atlasNames.size };
 }
 
+app.get('/api/locales', async (req, res) => {
+    try {
+        const bundlesDir = path.join(PROJECT_ROOT, 'core/assets/bundles');
+        const files = await fs.readdir(bundlesDir);
+        const locales = files
+            .filter(f => f.startsWith('bundle') && f.endsWith('.properties'))
+            .map(f => {
+                if (f === 'bundle.properties') return 'en';
+                const m = f.match(/bundle_(.+)\.properties/);
+                return m ? m[1] : null;
+            }).filter(Boolean);
+        res.json(locales);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/api/assets', async (req, res) => {
     try {
-        const data = await parseContent();
+        const locale = req.query.locale || 'en';
+        const bundleFile = locale === 'en' ? 'bundle' : `bundle_${locale}`;
+        const data = await parseContent(bundleFile);
         res.json(data);
     } catch (err) {
         console.error(err);
@@ -502,8 +682,11 @@ app.get('/api/assets-stream', async (req, res) => {
         'Access-Control-Allow-Origin': '*'
     });
 
+    const locale = req.query.locale || 'en';
+    const bundleFile = locale === 'en' ? 'bundle' : `bundle_${locale}`;
+
     try {
-        const data = await parseContent((msg) => {
+        const data = await parseContent(bundleFile, (msg) => {
             res.write(`data: ${JSON.stringify({ type: 'progress', message: msg })}\n\n`);
         });
         res.write(`data: ${JSON.stringify({ type: 'done', ...data })}\n\n`);

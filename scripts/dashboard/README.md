@@ -86,6 +86,17 @@ scripts/dashboard/
 | `extractVariables(fileName, typeName)` | Reads a Java content file's `public static Type` declaration block, parsing variable names line-by-line while tracking `//comment` sections as sub-categories; returns `[{name, subCategory}]`. |
 | `getBalancedBraces(content, startIndex)` | Extracts a balanced `{{ ... }}` block from a position in the Java source, handling nested braces correctly. |
 | `scanAtlasFinds()` | Scans every `.java` file under `core/src/mindustry/` for `Core.atlas.find("...")` and `Draw.rect("...", ...)` calls to discover dynamically referenced sprite names. |
+| `parseWeapons()` | Parses `UnitTypes.java` for `new Weapon("name")` patterns and returns a `Map<weaponSpriteName, unitName>` for ownership tracking. |
+
+### Orphan Reduction
+
+Three strategies are used to reduce false-positive orphaned sprites:
+
+| Strategy | Constant/Function | Description |
+|---|---|---|
+| **Weapon Sprites** | `parseWeapons()` | Maps weapon sprite names (e.g., `large-weapon`, `artillery`) to their parent units from `UnitTypes.java`. Also matches weapon variants (`-heat`, `-cell`, `-preview`, etc.). |
+| **Factory Shared Sprites** | `FACTORY_PATTERN` | Recognizes `factory-{in\|out\|top}-{size}` sprites from `PayloadBlock.java` — shared resources for all payload blocks. |
+| **Generated Sprites** | `GENERATED_PATTERNS` | Recognizes 11 categories of build-time generated sprites from `Generators.java`: cliff masks, composite icons (`-full`), UI icons (`-ui`), outlines (`-outline`), team colors, tread animations, splashes, bubbles, etc. |
 
 ### Core Parsing
 
