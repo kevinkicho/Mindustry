@@ -296,11 +296,61 @@ const AssetWizard = ({ isOpen, onClose, onGenerate }) => {
                                     padding: '14px 30px', borderRadius: '8px', backgroundColor: 'transparent',
                                     color: '#bbb', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', fontSize: '15px', fontWeight: 'bold', transition: 'all 0.2s'
                                 }}>Back</button>
-                                <button className="wiz-btn" onClick={handleGenerate} style={{
+                                <button className="wiz-btn" onClick={() => {
+                                    onGenerate({ type, id, name, stats, planet, parentId: parentId || undefined });
+                                    setStep(3); // Go to Sprite Upload
+                                }} style={{
                                     padding: '14px 40px', borderRadius: '8px', backgroundImage: 'linear-gradient(135deg, #00b894, #00cec9)',
                                     color: 'white', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold',
                                     boxShadow: '0 4px 20px rgba(0, 184, 148, 0.4)', transition: 'all 0.2s'
                                 }}>Generate Asset ✨</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 3: SPRITE UPLOAD */}
+                    {step === 3 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.3s' }}>
+                            <div style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '24px', textAlign: 'center' }}>
+                                <h3 style={{ margin: '0 0 10px 0', fontSize: '20px', color: '#00cec9' }}>
+                                    ✅ Asset Generated!
+                                </h3>
+                                <p style={{ color: '#aaa', fontSize: '14px', marginBottom: '20px' }}>
+                                    Boilerplate java code added for <strong>{id}</strong>. Now, assign a visual sprite.
+                                </p>
+
+                                <label style={{
+                                    display: 'block', padding: '40px', border: '2px dashed rgba(255,255,255,0.2)',
+                                    borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: 'rgba(0,0,0,0.2)'
+                                }} onMouseOver={e => e.currentTarget.style.borderColor = '#00cec9'} onMouseOut={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}>
+                                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>🖼️</div>
+                                    <div style={{ color: '#fff', fontWeight: 'bold' }}>Click or Drag .png here</div>
+                                    <input type="file" accept=".png" style={{ display: 'none' }} onChange={async (e) => {
+                                        const file = e.target.files[0];
+                                        if (!file) return;
+                                        const targetFolder = type === 'unit' ? 'units' : 'blocks';
+                                        const targetName = id.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()).replace(/^-/, '');
+                                        const targetPath = targetFolder + '/' + targetName + '.png';
+
+                                        const formData = new FormData();
+                                        formData.append('sprite', file);
+                                        formData.append('targetPath', targetPath);
+
+                                        try {
+                                            await fetch(`${API_BASE}/api/replace-sprite`, { method: 'POST', body: formData });
+                                            // The backend watcher or next reload will pick it up
+                                            onClose();
+                                        } catch (err) {
+                                            console.error("Upload failed", err);
+                                        }
+                                    }} />
+                                </label>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                                <button className="wiz-btn" onClick={onClose} style={{
+                                    padding: '12px 30px', borderRadius: '8px', backgroundColor: 'transparent',
+                                    color: '#bbb', border: 'none', cursor: 'pointer', fontSize: '14px', transition: 'all 0.2s', textDecoration: 'underline'
+                                }}>Skip for now</button>
                             </div>
                         </div>
                     )}

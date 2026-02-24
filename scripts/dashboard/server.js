@@ -252,7 +252,7 @@ function findSpriteInfo(asset, spriteIndex) {
         if (!searchId) continue;
         const matches = [];
         for (const [bn, entries] of spriteIndex) {
-            if (bn.startsWith(searchId)) {
+            if (bn === searchId || new RegExp('^' + searchId + '\\d+$').test(bn)) {
                 matches.push(entries[0]);
             }
         }
@@ -1085,11 +1085,107 @@ app.post('/api/open-folder', (req, res) => {
     });
 });
 
+const CAMPAIGN_PATH = path.join(__dirname, 'campaign-data.json');
+
+app.get('/api/campaign', async (req, res) => {
+    try {
+        if (!await fs.pathExists(CAMPAIGN_PATH)) {
+            const defaultData = {
+                serpulo: {
+                    sectors: [
+                        { id: 'groundZero', name: 'Ground Zero', difficulty: 1, type: 'survival', unlockReq: [] },
+                        { id: 'frozenForest', name: 'Frozen Forest', difficulty: 2, type: 'survival', unlockReq: ['groundZero'] },
+                        { id: 'craters', name: 'The Craters', difficulty: 3, type: 'survival', unlockReq: ['groundZero'] },
+                        { id: 'ruinousShores', name: 'Ruinous Shores', difficulty: 4, type: 'attack', unlockReq: ['frozenForest', 'craters'] },
+                        { id: 'tarFields', name: 'Tar Fields', difficulty: 5, type: 'survival', unlockReq: ['frozenForest'] },
+                        { id: 'impact0078', name: 'Impact 0078', difficulty: 6, type: 'attack', unlockReq: ['tarFields'] },
+                        { id: 'desolateRift', name: 'Desolate Rift', difficulty: 7, type: 'survival', unlockReq: ['impact0078'] },
+                        { id: 'nuclearComplex', name: 'Nuclear Production Complex', difficulty: 8, type: 'attack', unlockReq: ['ruinousShores'] },
+                        { id: 'planetaryTerminal', name: 'Planetary Launch Terminal', difficulty: 10, type: 'attack', unlockReq: ['nuclearComplex', 'desolateRift'] }
+                    ],
+                    layout: {
+                        'groundZero': { x: 50, y: 90 }, 'frozenForest': { x: 30, y: 70 }, 'craters': { x: 70, y: 70 },
+                        'ruinousShores': { x: 50, y: 50 }, 'tarFields': { x: 15, y: 50 }, 'impact0078': { x: 15, y: 30 },
+                        'desolateRift': { x: 30, y: 15 }, 'nuclearComplex': { x: 80, y: 30 }, 'planetaryTerminal': { x: 50, y: 10 }
+                    }
+                },
+                erekir: {
+                    sectors: [
+                        { id: 'aegis', name: 'Aegis', difficulty: 1, type: 'survival', unlockReq: [] },
+                        { id: 'lake', name: 'Lake', difficulty: 2, type: 'attack', unlockReq: ['aegis'] },
+                        { id: 'intersect', name: 'Intersect', difficulty: 3, type: 'survival', unlockReq: ['lake'] },
+                        { id: 'atlas', name: 'Atlas', difficulty: 4, type: 'attack', unlockReq: ['intersect'] }
+                    ],
+                    layout: {
+                        'aegis': { x: 50, y: 80 }, 'lake': { x: 30, y: 60 }, 'intersect': { x: 70, y: 60 }, 'atlas': { x: 50, y: 40 }
+                    }
+                }
+            };
+            res.json(defaultData);
+        } else {
+            const data = await fs.readJson(CAMPAIGN_PATH);
+            res.json(data);
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/campaign', async (req, res) => {
+    try {
+        await fs.writeJson(CAMPAIGN_PATH, req.body, { spaces: 2 });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.post('/api/repack', (req, res) => {
     exec('gradlew.bat tools:pack', { cwd: PROJECT_ROOT }, (err, stdout, stderr) => {
         if (err) return res.status(500).json({ error: stderr });
         res.json({ success: true, log: stdout });
     });
+});
+
+app.post('/api/deploy-mod', async (req, res) => {
+    const { name, displayName, author, description, version, minGameVersion, exportPath } = req.body;
+
+    if (!name) return res.status(400).json({ error: 'Mod internal name is required.' });
+
+    try {
+        // Build mod.hjson content
+        const modHjson = `name: "${name}"
+displayName: "${displayName || name}"
+author: "${author || 'Engine DB Config'}"
+description: "${description || 'Exported via Engine DB Toolkit.'}"
+version: "${version || '1.0'}"
+minGameVersion: "${minGameVersion || '146'}"
+java: true`;
+
+        // Define export directory
+        const baseExportDir = exportPath ? path.resolve(exportPath) : path.join(__dirname, 'exports', name);
+        await fs.ensureDir(baseExportDir);
+
+        // Define source directories from core
+        const srcContent = path.join(PROJECT_ROOT, 'core/src/mindustry/content');
+        const srcSprites = path.join(PROJECT_ROOT, 'core/assets-raw/sprites'); // or core/assets/sprites if packed
+        const srcSounds = path.join(PROJECT_ROOT, 'core/assets/sounds');
+        const srcBundles = path.join(PROJECT_ROOT, 'core/assets/bundles');
+
+        // Copy directories if they exist
+        if (await fs.pathExists(srcContent)) await fs.copy(srcContent, path.join(baseExportDir, 'scripts')); // Example mapping
+        if (await fs.pathExists(srcSprites)) await fs.copy(srcSprites, path.join(baseExportDir, 'sprites'));
+        if (await fs.pathExists(srcSounds)) await fs.copy(srcSounds, path.join(baseExportDir, 'sounds'));
+        if (await fs.pathExists(srcBundles)) await fs.copy(srcBundles, path.join(baseExportDir, 'bundles'));
+
+        // Write mod.hjson
+        await fs.writeFile(path.join(baseExportDir, 'mod.hjson'), modHjson);
+
+        res.json({ success: true, message: `Mod exported successfully to ${baseExportDir}` });
+    } catch (err) {
+        console.error('Deploy error:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(port, () => {
