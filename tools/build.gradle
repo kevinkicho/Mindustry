@@ -120,13 +120,10 @@ task tileImages(){
     }
 }
 
-task pack(dependsOn: [classes, configurations.runtimeClasspath]){
-
-    doLast{
+task pack(type: Exec, dependsOn: [classes, configurations.runtimeClasspath]){
+    doFirst{
         //cleanup old sprites
-        delete{
-            delete "../core/assets-raw/sprites_out/"
-        }
+        delete "../core/assets-raw/sprites_out/"
 
         //copy in new sprites
         copy{
@@ -136,20 +133,18 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
 
         //run generation task; generate all needed sprites
         file(genFolder).mkdirs()
-        javaexec{
-            main = "mindustry.tools.ImagePacker"
-            classpath = sourceSets.main.runtimeClasspath
-            workingDir = genFolder
-        }
+    }
 
+    commandLine System.getProperty("java.home") + "/bin/java.exe", "-cp", sourceSets.main.runtimeClasspath.asPath, "mindustry.tools.ImagePacker"
+    workingDir = genFolder
+
+    doLast{
         copy{
             from "../core/assets-raw/sprites_out/ui/icons"
             into "../core/assets-raw/sprites_out/ui/"
         }
 
-        delete{
-            delete "../core/assets-raw/sprites_out/ui/icons"
-        }
+        delete "../core/assets-raw/sprites_out/ui/icons"
 
         if(enableAA){
             ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
@@ -216,9 +211,9 @@ task fontgen(dependsOn: classes, type: JavaExec){
 
         String session = folder.child("session").readString()
 
-        Http.get("https://fontello.com/" + session + "/get").block(result -> {
+        Http.get("https://fontello.com/" + session + "/get").block{ result ->
             Streams.copy(result.getResultAsStream(), folder.child("font.zip").write())
-        })
+        }
 
         Log.info("Icon font...")
 
@@ -297,7 +292,7 @@ task updateBundles{
 
         Log.info("Updating bundles...")
 
-        Fi.get("core/assets/bundles").walk(child -> {
+        Fi.get("core/assets/bundles").walk{ child ->
             if(child.name() == "bundle.properties" || child.name() == "global.properties" || child.toString().contains("output")) return
             if(project.hasProperty("bundle") && child.name() != project.property("bundle")) return
 
@@ -333,8 +328,8 @@ task updateBundles{
                 }
             }
 
-            Func2<String, String, String> processor = (key, value) ->
-                    (key + " =" + (value.trim().isEmpty() ? "" : " ") + uniEscape(value)).replace("\n", "\\n") + "\n"
+            Func2<String, String, String> processor = { key, value ->
+                    (key + " =" + (value.trim().isEmpty() ? "" : " ") + uniEscape(value)).replace("\n", "\\n") + "\n" }
             Fi output = child.sibling("output/" + child.name())
 
             if(added > 0) Log.info("&lc@ keys added.", added)
@@ -353,6 +348,6 @@ task updateBundles{
             }
 
             child.writeString(result.toString())
-        })
+        }
     }
 }

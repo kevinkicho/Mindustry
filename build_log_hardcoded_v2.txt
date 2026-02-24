@@ -1,0 +1,59 @@
+No Android SDK found. Skipping Android module.
+Local Arc not found. Cloning https://github.com/Anuken/Arc to a directory next to Mindustry is highly recommended, as jitpack is unreliable.
+
+> Configure project :
+Compiling with build: 'custom build'
+
+> Configure project :desktop
+Scheduling sprite packing.
+
+> Task :annotations:clearCache
+> Task :annotations:compileJava UP-TO-DATE
+> Task :core:clearCache
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :annotations:processResources
+> Task :annotations:classes
+> Task :annotations:jar
+> Task :core:kaptGenerateStubsKotlin SKIPPED
+> Task :core:kaptKotlin UP-TO-DATE
+> Task :core:compileKotlin SKIPPED
+> Task :core:preGen UP-TO-DATE
+> Task :core:compileJava UP-TO-DATE
+> Task :core:processResources NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :desktop:clearCache
+> Task :desktop:compileJava UP-TO-DATE
+> Task :desktop:processResources NO-SOURCE
+> Task :desktop:classes UP-TO-DATE
+> Task :tools:clearCache
+> Task :tools:compileJava UP-TO-DATE
+> Task :tools:processResources NO-SOURCE
+> Task :tools:classes UP-TO-DATE
+> Task :tools:pack FAILED
+
+[Incubating] Problems report is available at: file:///C:/Users/kevin/Downloads/Mindustry/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file 'C:\Users\kevin\Downloads\Mindustry\tools\build.gradle' line: 139
+
+* What went wrong:
+Execution failed for task ':tools:pack'.
+> Could not find method javaexec() for arguments [build_409vamuuqrgxepf1iicp9fjmw$_run_closure3$_closure11$_closure14@472f6782] on project ':tools' of type org.gradle.api.Project.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 10s
+13 actionable tasks: 7 executed, 6 up-to-date

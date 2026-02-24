@@ -1,0 +1,71 @@
+
+c:\Users\kevin\Downloads\Mindustry>if "Windows_NT" == "Windows_NT" setlocal
+
+c:\Users\kevin\Downloads\Mindustry>set DIRNAME=c:\Users\kevin\Downloads\Mindustry\ 
+
+c:\Users\kevin\Downloads\Mindustry>if "c:\Users\kevin\Downloads\Mindustry\" == "" set DIRNAME=. 
+
+c:\Users\kevin\Downloads\Mindustry>set APP_BASE_NAME=gradlew 
+
+c:\Users\kevin\Downloads\Mindustry>set APP_HOME=c:\Users\kevin\Downloads\Mindustry\ 
+
+c:\Users\kevin\Downloads\Mindustry>for %i in ("c:\Users\kevin\Downloads\Mindustry\") do set APP_HOME=%~fi 
+
+c:\Users\kevin\Downloads\Mindustry>set APP_HOME=c:\Users\kevin\Downloads\Mindustry\ 
+
+c:\Users\kevin\Downloads\Mindustry>set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m" 
+
+c:\Users\kevin\Downloads\Mindustry>set "JAVA_HOME=C:\Program Files (x86)\Android\openjdk\jdk-17.0.14" 
+
+c:\Users\kevin\Downloads\Mindustry>if defined JAVA_HOME goto findJavaFromJavaHome 
+
+c:\Users\kevin\Downloads\Mindustry>set JAVA_HOME=C:\Program Files (x86)\Android\openjdk\jdk-17.0.14 
+
+c:\Users\kevin\Downloads\Mindustry>set JAVA_EXE=C:\Program Files (x86)\Android\openjdk\jdk-17.0.14\bin\java.exe 
+
+c:\Users\kevin\Downloads\Mindustry>if exist "C:\Program Files (x86)\Android\openjdk\jdk-17.0.14\bin\java.exe" goto execute 
+
+c:\Users\kevin\Downloads\Mindustry>set CLASSPATH=c:\Users\kevin\Downloads\Mindustry\\gradle\wrapper\gradle-wrapper.jar 
+
+c:\Users\kevin\Downloads\Mindustry>"C:\Program Files (x86)\Android\openjdk\jdk-17.0.14\bin\java.exe" "-Xmx64m" "-Xms64m"   "-Dorg.gradle.appname=gradlew" -classpath "c:\Users\kevin\Downloads\Mindustry\\gradle\wrapper\gradle-wrapper.jar" org.gradle.wrapper.GradleWrapperMain desktop:run -Pdummy=1. " 
+No Android SDK found. Skipping Android module.
+Local Arc not found. Cloning https://github.com/Anuken/Arc to a directory next to Mindustry is highly recommended, as jitpack is unreliable.
+
+> Configure project :
+Compiling with build: 'custom build'
+
+> Configure project :desktop
+Scheduling sprite packing.
+
+[Incubating] Problems report is available at: file:///C:/Users/kevin/Downloads/Mindustry/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Cannot locate matching tasks for an empty path. The path should include a task name (for example ':help' or 'help').
+
+* Try:
+> Run gradlew tasks to get a list of available tasks.
+> For more on name expansion, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:name_abbreviation in the Gradle documentation.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1s
+
+c:\Users\kevin\Downloads\Mindustry>if "1" == "0" goto mainEnd 
+
+c:\Users\kevin\Downloads\Mindustry>rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of 
+
+c:\Users\kevin\Downloads\Mindustry>rem the _cmd.exe /c_ return code! 
+
+c:\Users\kevin\Downloads\Mindustry>if not "" == "" exit 1 
+
+c:\Users\kevin\Downloads\Mindustry>exit /b 1 

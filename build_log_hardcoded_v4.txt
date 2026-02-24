@@ -1,0 +1,119 @@
+No Android SDK found. Skipping Android module.
+Local Arc not found. Cloning https://github.com/Anuken/Arc to a directory next to Mindustry is highly recommended, as jitpack is unreliable.
+
+> Configure project :
+Compiling with build: 'custom build'
+
+> Configure project :desktop
+Scheduling sprite packing.
+
+> Task :annotations:clearCache
+> Task :annotations:compileJava UP-TO-DATE
+> Task :core:clearCache
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :annotations:processResources UP-TO-DATE
+> Task :annotations:classes UP-TO-DATE
+> Task :annotations:jar UP-TO-DATE
+> Task :core:kaptGenerateStubsKotlin SKIPPED
+> Task :core:kaptKotlin UP-TO-DATE
+> Task :core:compileKotlin SKIPPED
+> Task :core:preGen UP-TO-DATE
+> Task :core:compileJava UP-TO-DATE
+> Task :core:processResources NO-SOURCE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :desktop:clearCache
+> Task :desktop:compileJava UP-TO-DATE
+> Task :desktop:processResources NO-SOURCE
+> Task :desktop:classes UP-TO-DATE
+> Task :tools:clearCache
+> Task :tools:compileJava UP-TO-DATE
+> Task :tools:processResources NO-SOURCE
+> Task :tools:classes UP-TO-DATE
+
+> Task :tools:pack
+[Generator] Time to generate autotiles: 64.6302ms
+[Generator] Time to generate splashes: 70.71831ms
+[Generator] Time to generate bubbles: 44.0049ms
+[Generator] Time to generate gas-frames: 335.9987ms
+[Generator] Time to generate cliffs: 1757.3406ms
+[Generator] Time to generate cracks: 924.59595ms
+[Generator] Time to generate block-icons: 1821.9397ms
+[Generator] Time to generate shallows: 8.6747ms
+[Generator] Time to generate item-icons: 50.761ms
+[Generator] Time to generate sector-icons: 152.86209ms
+[Generator] Time to generate team-icons: 11.4236ms
+[Generator] Time to generate unit-icons: 2435.522ms
+[Generator] Time to generate ore-icons: 202.8428ms
+[Generator] Time to generate edges: 148.5179ms
+[Generator] Time to generate scorches: 871.54913ms
+[Generator] Total time to generate: 9723.567ms
+Time taken for AA: 4.945 seconds
+
+
+Packing normal 4096 sprites...
+
+
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out
+| Packing................
+| Writing 4096x4096: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\sprites.png
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out\blocks\environment
+| Packing................
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\sprites2.png
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out\rubble
+| Packing................
+| Writing 4096x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\sprites3.png
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out\ui
+| Packing................
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\sprites4.png
+
+
+Packing fallback 2048 sprites...
+
+
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out
+| Packing................
+| Packing................
+| Packing................
+| Packing................
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites.png
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites2.png
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites3.png
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites4.png
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out\blocks\environment
+| Packing................
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites5.png
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out\rubble
+| Packing................
+| Packing................
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites6.png
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites7.png
+C:\Users\kevin\Downloads\Mindustry\core\assets-raw\sprites_out\ui
+| Packing................
+| Writing 2048x2048: C:\Users\kevin\Downloads\Mindustry\core\assets\sprites\fallback\sprites8.png
+
+> Task :desktop:run
+[I] [Core] Initialized SDL v2.32.8
+[I] [Audio] Initialized SoLoud 20260203 using MiniAudio at 44100hz / 441 samples / 2 channels
+[I] [GL] Version: OpenGL 4.6.0 / NVIDIA Corporation / NVIDIA GeForce RTX 3080 Laptop GPU/PCIe/SSE2 / 4.6.0 NVIDIA 591.74
+[I] [GL] Max texture size: 32768
+[I] [GL] Using OpenGL 3 API.
+[I] [GL] Total available VRAM: 16384mb
+[I] [JAVA] Version: 17.0.14
+[I] [RAM] Available: 15.9 GB
+[I] [Mindustry] Version: custom
+[I] Total time to load: 4931ms
+[I] Fetched 164 community servers.
+
+[Incubating] Problems report is available at: file:///C:/Users/kevin/Downloads/Mindustry/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.3.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 3m 52s
+14 actionable tasks: 6 executed, 8 up-to-date
+'shell' is not recognized as an internal or external command,
+operable program or batch file.

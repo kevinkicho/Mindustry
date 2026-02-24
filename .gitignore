@@ -1,3 +1,5 @@
+scripts/dashboard/node_modules/
+scripts/dashboard/client/node_modules/
 /node_modules/
 logs/
 /fastlane/metadata/android/en-US/changelogs/
