@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import TechTreeExplorer from './components/TechTreeExplorer';
+import MediaInspector from './components/MediaInspector';
+import SpritePreview from './components/SpritePreview';
+import BulkEditModal from './components/BulkEditModal';
+import AssetWizard from './components/AssetWizard';
 
 const API_BASE = 'http://localhost:3001';
 
@@ -16,6 +21,13 @@ function App() {
     const [blockSubFilter, setBlockSubFilter] = useState('');
     const [locales, setLocales] = useState(['en']);
     const [selectedLocale, setSelectedLocale] = useState('en');
+    const [showTechTree, setShowTechTree] = useState(false);
+    const [showMediaInspector, setShowMediaInspector] = useState(false);
+    const [teamColor, setTeamColor] = useState('#ffa500'); // Default Sharded orange
+    const [selectedIds, setSelectedIds] = useState(new Set());
+    const [showBulkEdit, setShowBulkEdit] = useState(false);
+    const [bulkStats, setBulkStats] = useState({});
+    const [showWizard, setShowWizard] = useState(false);
 
     useEffect(() => {
         fetchLocales();
@@ -57,12 +69,98 @@ function App() {
         };
     };
 
-    const openFolder = (spritePath) => {
-        fetch(`${API_BASE}/api/open-folder`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ spritePath })
+    const openFolder = async (spritePath) => {
+        try {
+            await fetch(`${API_BASE}/api/open-folder`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ spritePath })
+            });
+        } catch (err) { console.error(err); }
+        setLoading(false);
+    };
+
+    const handleGenerateAsset = async (data) => {
+        setLoading(true);
+        setProgressMsg(`Generating ${data.id}...`);
+        try {
+            const res = await fetch(`${API_BASE}/api/assets/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (result.success) {
+                if (data.parentId) {
+                    setProgressMsg(`Adding ${data.id} to Tech Tree...`);
+                    await fetch(`${API_BASE}/api/techtree/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            planet: data.planet || 'serpulo',
+                            action: 'add',
+                            node: data.id,
+                            parentId: data.parentId
+                        })
+                    });
+                }
+                setMessage(`Success: ${result.message}`);
+                fetchAssets(); // Refresh list
+            } else {
+                setMessage(`Error: ${result.error}`);
+            }
+        } catch (err) {
+            setMessage(`Failed to generate asset: ${err.message}`);
+        }
+        setLoading(false);
+    };
+    const toggleSelect = (id) => {
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
         });
+    };
+
+    const selectAll = () => {
+        if (selectedIds.size === filteredAssets.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filteredAssets.map(a => a.id || a.variableName)));
+        }
+    };
+
+    const saveBulk = async () => {
+        setLoading(true);
+        setProgressMsg('Applying mass changes...');
+        const updates = Array.from(selectedIds).map(id => {
+            const asset = assets.find(a => (a.id || a.variableName) === id);
+            return {
+                id: asset.id,
+                sourceFile: asset.sourceFile,
+                stats: bulkStats
+            };
+        });
+
+        try {
+            const res = await fetch(`${API_BASE}/api/assets/bulk-update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ updates })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setMessage(`Successfully updated ${data.modified} assets across ${data.files} files.`);
+                setSelectedIds(new Set());
+                setShowBulkEdit(false);
+                setBulkStats({});
+                fetchAssets();
+            }
+        } catch (err) {
+            setMessage('Error applying bulk updates: ' + err.message);
+        }
+        setLoading(false);
     };
 
     const handleStatChange = (id, key, value) => {
@@ -216,6 +314,28 @@ function App() {
                         >
                             {showAudit ? 'View Dash' : 'Audit Mode'}
                         </button>
+                        <button
+                            onClick={() => setShowWizard(true)}
+                            style={{
+                                padding: '0.8rem 1.2rem', backgroundColor: '#00b894', color: 'white',
+                                border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
+                                boxShadow: '0 4px 15px rgba(0, 184, 148, 0.3)'
+                            }}
+                        >
+                            + New Asset
+                        </button>
+                        <button
+                            onClick={() => setShowTechTree(true)}
+                            style={{ padding: '0.8rem 1.2rem', backgroundColor: '#333', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                        >
+                            🌳 Tech Tree
+                        </button>
+                        <button
+                            onClick={() => setShowMediaInspector(true)}
+                            style={{ padding: '0.8rem 1.2rem', backgroundColor: '#333', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                        >
+                            🎙️ Media
+                        </button>
                         <input
                             type="text"
                             placeholder="Search name or ID..."
@@ -236,8 +356,48 @@ function App() {
                         >
                             {locales.map(l => <option key={l} value={l}>{l.toUpperCase()}</option>)}
                         </select>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#222', padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid #333' }}>
+                            <span style={{ fontSize: '0.7rem', color: '#888' }}>Team:</span>
+                            <input
+                                type="color"
+                                value={teamColor}
+                                onChange={(e) => setTeamColor(e.target.value)}
+                                style={{ width: '24px', height: '24px', border: 'none', background: 'none', cursor: 'pointer' }}
+                            />
+                            <select
+                                onChange={(e) => setTeamColor(e.target.value)}
+                                style={{ background: 'none', border: 'none', color: '#ccc', fontSize: '0.75rem', outline: 'none', cursor: 'pointer' }}
+                            >
+                                <option value="#ffa500">Sharded</option>
+                                <option value="#f25555">Crux</option>
+                                <option value="#a488eb">Malis</option>
+                                <option value="#dcdcdc">Derelict</option>
+                                <option value="#597be3">Blue</option>
+                                <option value="#8df271">Green</option>
+                            </select>
+                        </div>
                     </div>
                 </header>
+
+                {selectedIds.size > 0 && (
+                    <div style={{ position: 'sticky', top: '1rem', zIndex: 100, background: '#111', border: '1px solid #ff9800', padding: '1rem 2rem', borderRadius: '12px', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', animation: 'slideIn 0.3s ease' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                            <span style={{ fontWeight: 'bold', color: '#ff9800', fontSize: '1.1rem' }}>{selectedIds.size} Assets Selected</span>
+                            <button onClick={selectAll} style={{ background: 'transparent', border: '1px solid #444', color: '#ff9800', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}>
+                                {selectedIds.size === filteredAssets.length ? 'Deselect All' : 'Select All Filtered'}
+                            </button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <button onClick={() => setShowBulkEdit(true)} style={{ background: '#ff9800', color: 'black', border: 'none', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: '800', letterSpacing: '0.05em' }}>
+                                ⚖️ BULK EDIT BALANCER
+                            </button>
+                            <button onClick={() => setSelectedIds(new Set())} style={{ background: '#333', color: 'white', border: 'none', padding: '0.7rem 1.5rem', borderRadius: '8px', cursor: 'pointer' }}>
+                                Cancel
+                            </button>
+                        </div>
+                        <style>{`@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+                    </div>
+                )}
 
                 {message && <div style={{ padding: '1rem', background: '#333', borderRadius: '4px', marginBottom: '1rem', borderLeft: '4px solid #ff9800' }}>{message}</div>}
 
@@ -320,16 +480,17 @@ function App() {
                         {filteredAssets.map((asset) => (
                             <div key={asset.variableName + asset.sourceFile} style={{ background: '#1e1e1e', padding: '1.5rem', borderRadius: '12px', border: '1px solid #333', display: 'flex', flexDirection: 'column' }}>
                                 <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a', borderRadius: '8px', marginBottom: '1.5rem', position: 'relative' }}>
-                                    {asset.spritePath ? (
-                                        <img
-                                            src={`${API_BASE}/sprites/${asset.spritePath}`}
-                                            alt={asset.id}
-                                            style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'contain', imageRendering: 'pixelated' }}
-                                        />
-                                    ) : <div style={{ textAlign: 'center' }}>
-                                        <p style={{ color: '#666', margin: 0 }}>No Sprite Found</p>
-                                        <small style={{ color: '#444', fontSize: '0.65rem' }}>Attempts: {asset.variableName}, {asset.id}</small>
-                                    </div>}
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedIds.has(asset.id || asset.variableName)}
+                                        onChange={() => toggleSelect(asset.id || asset.variableName)}
+                                        style={{ position: 'absolute', top: '10px', left: '10px', width: '20px', height: '20px', cursor: 'pointer', zIndex: 10 }}
+                                    />
+                                    <SpritePreview
+                                        asset={asset}
+                                        teamColor={teamColor}
+                                        size="120px"
+                                    />
                                     <span style={{ position: 'absolute', top: '8px', right: '8px', background: '#333', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', color: '#888' }}>{asset.category}</span>
                                 </div>
 
@@ -466,8 +627,37 @@ function App() {
                     </div>
                 )}
             </main>
+            {showTechTree && (
+                <TechTreeExplorer
+                    assets={assets}
+                    onClose={() => setShowTechTree(false)}
+                />
+            )}
+
+            {showMediaInspector && (
+                <MediaInspector
+                    onClose={() => setShowMediaInspector(false)}
+                />
+            )}
+
+            <BulkEditModal
+                isOpen={showBulkEdit}
+                onClose={() => setShowBulkEdit(false)}
+                onApply={(stats) => {
+                    setBulkStats(stats);
+                    saveBulk();
+                    setShowBulkEdit(false);
+                }}
+            />
+
+            <AssetWizard
+                isOpen={showWizard}
+                onClose={() => setShowWizard(false)}
+                onGenerate={handleGenerateAsset}
+            />
         </div>
     );
 }
+
 
 export default App;

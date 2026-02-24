@@ -26,7 +26,9 @@ public class SerpuloTechTree{
                             });
                         });
 
-                        node(distributor);
+                        node(distributor)() -> {{
+            node(sampleTurret);
+        }};
                         node(sorter, () -> {
                             node(invertedSorter);
                             node(overflowGate, () -> {

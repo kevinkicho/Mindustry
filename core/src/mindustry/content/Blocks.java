@@ -41,149 +41,7 @@ import static mindustry.Vars.*;
 import static mindustry.type.ItemStack.*;
 
 public class Blocks{
-    public static Block
-
-    //environment
-    air, spawn, removeWall, removeOre, cliff, deepwater, water, taintedWater, deepTaintedWater, tar, slag, cryofluid, stone, craters, charr, sand, darksand, dirt, mud, ice, snow, darksandTaintedWater, space, empty,
-    dacite, rhyolite, rhyoliteCrater, roughRhyolite, regolith, yellowStone, redIce, redStone, denseRedStone,
-    arkyciteFloor, arkyicStone,
-    redmat, bluemat,
-    stoneWall, dirtWall, sporeWall, iceWall, daciteWall, sporePine, snowPine, pine, shrubs, whiteTree, whiteTreeDead, sporeCluster,
-    redweed, purbush, yellowCoral,
-    rhyoliteVent, carbonVent, arkyicVent, yellowStoneVent, redStoneVent, crystallineVent, stoneVent, basaltVent,
-    regolithWall, yellowStoneWall, rhyoliteWall, carbonWall, redIceWall, ferricStoneWall, beryllicStoneWall, arkyicWall, crystallineStoneWall, redStoneWall, redDiamondWall,
-    ferricStone, ferricCraters, carbonStone, beryllicStone, crystallineStone, crystalFloor, yellowStonePlates,
-    iceSnow, sandWater, darksandWater, duneWall, sandWall, moss, sporeMoss, shale, shaleWall, grass, salt,
-    coreZone,
-    //boulders
-    shaleBoulder, sandBoulder, daciteBoulder, boulder, snowBoulder, basaltBoulder, carbonBoulder, ferricBoulder, beryllicBoulder, yellowStoneBoulder,
-    arkyicBoulder, crystalCluster, vibrantCrystalCluster, crystalBlocks, crystalOrbs, crystallineBoulder, redIceBoulder, rhyoliteBoulder, redStoneBoulder,
-
-    metalFloor, metalFloorDamaged, metalFloor2, metalFloor3, metalFloor4, metalFloor5, basalt, magmarock, hotrock, snowWall, saltWall,
-    //old metal floors
-    darkPanel1, darkPanel2, darkPanel3, darkPanel4, darkPanel5, darkPanel6, darkMetal,
-    //new metal floors
-    metalTiles1, metalTiles2, metalTiles3, metalTiles4, metalTiles5, metalTiles6, metalTiles7, metalTiles8, metalTiles9, metalTiles10, metalTiles11, metalTiles12, metalTiles13,
-    //new metal walls
-    metalWall1, metalWall2, metalWall3,
-
-    //colored
-    coloredFloor, coloredWall,
-    characterOverlayGray,
-    characterOverlayWhite,
-    runeOverlay,
-    cruxRuneOverlay,
-
-    pebbles, tendrils,
-
-    //ores
-    oreCopper, oreLead, oreScrap, oreCoal, oreTitanium, oreThorium,
-    oreBeryllium, oreTungsten, oreCrystalThorium, wallOreThorium,
-
-    //wall ores
-    wallOreBeryllium, graphiticWall, wallOreGraphite, wallOreTungsten,
-
-    //crafting
-    siliconSmelter, siliconCrucible, kiln, graphitePress, plastaniumCompressor, multiPress, phaseWeaver, surgeSmelter, pyratiteMixer, blastMixer, cryofluidMixer,
-    melter, separator, disassembler, sporePress, pulverizer, incinerator, coalCentrifuge,
-
-    //crafting - erekir
-    siliconArcFurnace, electrolyzer, oxidationChamber, atmosphericConcentrator, electricHeater, slagHeater, phaseHeater, heatRedirector, smallHeatRedirector, heatRouter, slagIncinerator,
-    carbideCrucible, slagCentrifuge, surgeCrucible, cyanogenSynthesizer, phaseSynthesizer, heatReactor,
-
-    //sandbox
-    powerSource, powerVoid, itemSource, itemVoid, liquidSource, liquidVoid, payloadSource, payloadVoid, illuminator, heatSource,
-
-    //walls
-    copperWall, copperWallLarge, titaniumWall, titaniumWallLarge, plastaniumWall, plastaniumWallLarge, thoriumWall, thoriumWallLarge, door, doorLarge,
-    phaseWall, phaseWallLarge, surgeWall, surgeWallLarge,
-
-    scrapWall, scrapWallLarge, scrapWallHuge, scrapWallGigantic, thruster, //ok, these names are getting ridiculous, but at least I don't have humongous walls yet
-
-    //walls - erekir
-    berylliumWall, berylliumWallLarge, tungstenWall, tungstenWallLarge, blastDoor, reinforcedSurgeWall, reinforcedSurgeWallLarge, carbideWall, carbideWallLarge,
-    shieldedWall,
-
-    //defense
-    mender, mendProjector, overdriveProjector, overdriveDome, forceProjector, shockMine,
-
-    //defense - erekir
-    radar,
-    buildTower,
-    regenProjector, barrierProjector, shockwaveTower,
-    //campaign only
-    shieldProjector,
-    largeShieldProjector,
-    shieldBreaker,
-
-    //transport
-    conveyor, titaniumConveyor, plastaniumConveyor, armoredConveyor, distributor, junction, itemBridge, phaseConveyor, sorter, invertedSorter, router,
-    overflowGate, underflowGate, unloader, massDriver,
-
-    //transport - alternate
-    duct, armoredDuct, ductRouter, overflowDuct, underflowDuct, ductBridge, ductUnloader,
-    surgeConveyor, surgeRouter,
-
-    unitCargoLoader, unitCargoUnloadPoint,
-
-    //liquid
-    mechanicalPump, rotaryPump, impulsePump, conduit, pulseConduit, platedConduit, liquidRouter, liquidContainer, liquidTank, liquidJunction, bridgeConduit, phaseConduit,
-
-    //liquid - reinforced
-    reinforcedPump, reinforcedConduit, reinforcedLiquidJunction, reinforcedBridgeConduit, reinforcedLiquidRouter, reinforcedLiquidContainer, reinforcedLiquidTank,
-
-    //power
-    combustionGenerator, thermalGenerator, steamGenerator, differentialGenerator, rtgGenerator, solarPanel, largeSolarPanel, thoriumReactor,
-    impactReactor, battery, batteryLarge, powerNode, powerNodeLarge, surgeTower, diode,
-
-    //power - erekir
-    turbineCondenser, ventCondenser, chemicalCombustionChamber, pyrolysisGenerator, fluxReactor, neoplasiaReactor,
-    beamNode, beamTower, beamLink,
-
-    //production
-    mechanicalDrill, pneumaticDrill, laserDrill, blastDrill, waterExtractor, oilExtractor, cultivator,
-    cliffCrusher, largeCliffCrusher, plasmaBore, largePlasmaBore, impactDrill, eruptionDrill,
-
-    //storage
-    coreShard, coreFoundation, coreNucleus, vault, container,
-    //storage - erekir
-    coreBastion, coreCitadel, coreAcropolis, reinforcedContainer, reinforcedVault,
-
-    //turrets
-    duo, scatter, scorch, hail, arc, wave, lancer, swarmer, salvo, fuse, ripple, cyclone, foreshadow, spectre, meltdown, segment, parallax, tsunami,
-
-    //turrets - erekir
-    breach, diffuse, sublimate, titan, disperse, afflict, lustre, scathe, smite, malign,
-
-    //units
-    groundFactory, airFactory, navalFactory,
-    additiveReconstructor, multiplicativeReconstructor, exponentialReconstructor, tetrativeReconstructor,
-    repairPoint, repairTurret,
-
-    //units - erekir
-    tankFabricator, shipFabricator, mechFabricator,
-
-    tankRefabricator, shipRefabricator, mechRefabricator,
-    primeRefabricator,
-
-    tankAssembler, shipAssembler, mechAssembler,
-    basicAssemblerModule,
-
-    unitRepairTower,
-
-    //payloads
-    payloadConveyor, payloadRouter, reinforcedPayloadConveyor, reinforcedPayloadRouter, payloadMassDriver, largePayloadMassDriver, smallDeconstructor, deconstructor, constructor, largeConstructor, payloadLoader, payloadUnloader,
-
-    //logic
-    message, switchBlock, microProcessor, logicProcessor, hyperProcessor, largeLogicDisplay, logicDisplay, tileLogicDisplay, memoryCell, memoryBank,
-    canvas, reinforcedMessage,
-    worldProcessor, worldCell, worldMessage, worldSwitch,
-
-    //campaign
-    launchPad, advancedLaunchPad, landingPad,
-    interplanetaryAccelerator
-
-    ;
+    public static Block //environment air, spawn, removeWall, removeOre, cliff, deepwater, water, taintedWater, deepTaintedWater, tar, slag, cryofluid, stone, craters, charr, sand, darksand, dirt, mud, ice, snow, darksandTaintedWater, space, empty, dacite, rhyolite, rhyoliteCrater, roughRhyolite, regolith, yellowStone, redIce, redStone, denseRedStone, arkyciteFloor, arkyicStone, redmat, bluemat, stoneWall, dirtWall, sporeWall, iceWall, daciteWall, sporePine, snowPine, pine, shrubs, whiteTree, whiteTreeDead, sporeCluster, redweed, purbush, yellowCoral, rhyoliteVent, carbonVent, arkyicVent, yellowStoneVent, redStoneVent, crystallineVent, stoneVent, basaltVent, regolithWall, yellowStoneWall, rhyoliteWall, carbonWall, redIceWall, ferricStoneWall, beryllicStoneWall, arkyicWall, crystallineStoneWall, redStoneWall, redDiamondWall, ferricStone, ferricCraters, carbonStone, beryllicStone, crystallineStone, crystalFloor, yellowStonePlates, iceSnow, sandWater, darksandWater, duneWall, sandWall, moss, sporeMoss, shale, shaleWall, grass, salt, coreZone, //boulders shaleBoulder, sandBoulder, daciteBoulder, boulder, snowBoulder, basaltBoulder, carbonBoulder, ferricBoulder, beryllicBoulder, yellowStoneBoulder, arkyicBoulder, crystalCluster, vibrantCrystalCluster, crystalBlocks, crystalOrbs, crystallineBoulder, redIceBoulder, rhyoliteBoulder, redStoneBoulder, metalFloor, metalFloorDamaged, metalFloor2, metalFloor3, metalFloor4, metalFloor5, basalt, magmarock, hotrock, snowWall, saltWall, //old metal floors darkPanel1, darkPanel2, darkPanel3, darkPanel4, darkPanel5, darkPanel6, darkMetal, //new metal floors metalTiles1, metalTiles2, metalTiles3, metalTiles4, metalTiles5, metalTiles6, metalTiles7, metalTiles8, metalTiles9, metalTiles10, metalTiles11, metalTiles12, metalTiles13, //new metal walls metalWall1, metalWall2, metalWall3, //colored coloredFloor, coloredWall, characterOverlayGray, characterOverlayWhite, runeOverlay, cruxRuneOverlay, pebbles, tendrils, //ores oreCopper, oreLead, oreScrap, oreCoal, oreTitanium, oreThorium, oreBeryllium, oreTungsten, oreCrystalThorium, wallOreThorium, //wall ores wallOreBeryllium, graphiticWall, wallOreGraphite, wallOreTungsten, //crafting siliconSmelter, siliconCrucible, kiln, graphitePress, plastaniumCompressor, multiPress, phaseWeaver, surgeSmelter, pyratiteMixer, blastMixer, cryofluidMixer, melter, separator, disassembler, sporePress, pulverizer, incinerator, coalCentrifuge, //crafting - erekir siliconArcFurnace, electrolyzer, oxidationChamber, atmosphericConcentrator, electricHeater, slagHeater, phaseHeater, heatRedirector, smallHeatRedirector, heatRouter, slagIncinerator, carbideCrucible, slagCentrifuge, surgeCrucible, cyanogenSynthesizer, phaseSynthesizer, heatReactor, //sandbox powerSource, powerVoid, itemSource, itemVoid, liquidSource, liquidVoid, payloadSource, payloadVoid, illuminator, heatSource, //walls copperWall, copperWallLarge, titaniumWall, titaniumWallLarge, plastaniumWall, plastaniumWallLarge, thoriumWall, thoriumWallLarge, door, doorLarge, phaseWall, phaseWallLarge, surgeWall, surgeWallLarge, scrapWall, scrapWallLarge, scrapWallHuge, scrapWallGigantic, thruster, //ok, these names are getting ridiculous, but at least I don't have humongous walls yet //walls - erekir berylliumWall, berylliumWallLarge, tungstenWall, tungstenWallLarge, blastDoor, reinforcedSurgeWall, reinforcedSurgeWallLarge, carbideWall, carbideWallLarge, shieldedWall, //defense mender, mendProjector, overdriveProjector, overdriveDome, forceProjector, shockMine, //defense - erekir radar, buildTower, regenProjector, barrierProjector, shockwaveTower, //campaign only shieldProjector, largeShieldProjector, shieldBreaker, //transport conveyor, titaniumConveyor, plastaniumConveyor, armoredConveyor, distributor, junction, itemBridge, phaseConveyor, sorter, invertedSorter, router, overflowGate, underflowGate, unloader, massDriver, //transport - alternate duct, armoredDuct, ductRouter, overflowDuct, underflowDuct, ductBridge, ductUnloader, surgeConveyor, surgeRouter, unitCargoLoader, unitCargoUnloadPoint, //liquid mechanicalPump, rotaryPump, impulsePump, conduit, pulseConduit, platedConduit, liquidRouter, liquidContainer, liquidTank, liquidJunction, bridgeConduit, phaseConduit, //liquid - reinforced reinforcedPump, reinforcedConduit, reinforcedLiquidJunction, reinforcedBridgeConduit, reinforcedLiquidRouter, reinforcedLiquidContainer, reinforcedLiquidTank, //power combustionGenerator, thermalGenerator, steamGenerator, differentialGenerator, rtgGenerator, solarPanel, largeSolarPanel, thoriumReactor, impactReactor, battery, batteryLarge, powerNode, powerNodeLarge, surgeTower, diode, //power - erekir turbineCondenser, ventCondenser, chemicalCombustionChamber, pyrolysisGenerator, fluxReactor, neoplasiaReactor, beamNode, beamTower, beamLink, //production mechanicalDrill, pneumaticDrill, laserDrill, blastDrill, waterExtractor, oilExtractor, cultivator, cliffCrusher, largeCliffCrusher, plasmaBore, largePlasmaBore, impactDrill, eruptionDrill, //storage coreShard, coreFoundation, coreNucleus, vault, container, //storage - erekir coreBastion, coreCitadel, coreAcropolis, reinforcedContainer, reinforcedVault, //turrets duo, scatter, scorch, hail, arc, wave, lancer, swarmer, salvo, fuse, ripple, cyclone, foreshadow, spectre, meltdown, segment, parallax, tsunami, //turrets - erekir breach, diffuse, sublimate, titan, disperse, afflict, lustre, scathe, smite, malign, //units groundFactory, airFactory, navalFactory, additiveReconstructor, multiplicativeReconstructor, exponentialReconstructor, tetrativeReconstructor, repairPoint, repairTurret, //units - erekir tankFabricator, shipFabricator, mechFabricator, tankRefabricator, shipRefabricator, mechRefabricator, primeRefabricator, tankAssembler, shipAssembler, mechAssembler, basicAssemblerModule, unitRepairTower, //payloads payloadConveyor, payloadRouter, reinforcedPayloadConveyor, reinforcedPayloadRouter, payloadMassDriver, largePayloadMassDriver, smallDeconstructor, deconstructor, constructor, largeConstructor, payloadLoader, payloadUnloader, //logic message, switchBlock, microProcessor, logicProcessor, hyperProcessor, largeLogicDisplay, logicDisplay, tileLogicDisplay, memoryCell, memoryBank, canvas, reinforcedMessage, worldProcessor, worldCell, worldMessage, worldSwitch, //campaign launchPad, advancedLaunchPad, landingPad, interplanetaryAccelerator, sampleTurret;
 
     public static void load(){
         //region environment
@@ -6920,6 +6778,22 @@ public class Blocks{
 
             targetable = false;
             privileged = true;
+        }};
+
+        
+        sampleTurret = new ItemTurret("sample-turret"){{
+            requirements(Category.turret, with(Items.copper, 50));
+            ammo(
+                Items.copper, new BasicBulletType(2.5f, 10){{
+                    width = 7f;
+                    height = 9f;
+                    lifetime = 60f;
+                }}
+            );
+            reload = 30f;
+            range = 150200f;
+            size = 1;
+            health = 400;
         }};
 
         //endregion

@@ -1,0 +1,19 @@
+{
+    "updates": [
+        {
+            "id": "blockA",
+            "sourceFile": "TestBlocks.java",
+            "stats": {
+                "health": "200",
+                "buildTime": "90"
+            }
+        },
+        {
+            "id": "blockB",
+            "sourceFile": "TestBlocks.java",
+            "stats": {
+                "health": "50"
+            }
+        }
+    ]
+}
